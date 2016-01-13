@@ -15,12 +15,14 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot' 
 
+version = '1.0'
+
 jar {
 	baseName = 'launcher-java-opts-bug'
-	version = '0.0.1-SNAPSHOT'
+//	version = '0.0.1-SNAPSHOT'
 }
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 repositories {
 	mavenCentral()
@@ -43,3 +45,39 @@ eclipse {
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.9'
 }
+
+springBoot {
+	executable = true
+}
+
+task demoZip(type: Zip, dependsOn:'build') {
+	baseName = project.name
+	from('build/libs') {
+		include "*.jar"
+		include "*.conf"
+	}
+	from('./') {
+		include "${project.name}-demo.sh"
+	}
+}
+
+demoZip.doFirst {
+	def confFile = new File("build/libs/${project.name}-${version}.conf")
+	confFile << 'LOG_FOLDER="${WORKING_DIR}"' + "\n"
+	confFile << "LOG_FILENAME=\"${project.name}.log\"\n"
+	confFile << 'JAVA_OPTS="-Xmx100M -Dspring.profiles.active=myProfile"'
+}
+
+demoZip.doLast {
+	println ""
+	println "////"
+	println "// Manual steps required to demonstrate the bug"
+	println "////"
+	println "1. Copy build/distributions/launcher-java-opts-bug-1.0.zip to a Linux machine with > Java 7"
+	println "1a. Linux user must have sudo priveleges"
+	println "2. In any folder, 'unzip launcher-java-opts-bug-1.0.zip'"
+	println "3. Run launcher-java-opts-bug-demo.sh"
+	println "3a. If necessary, provide sudoer password"
+	println "4. Read and follow manual steps listed in the script's output"
+}
+
