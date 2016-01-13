@@ -1,0 +1,21 @@
+#Eclipse Resources
+.project
+.classpath
+.settings/
+bin/
+
+#Generated Build folders
+out/
+build/
+
+#Gradle resources
+.gradle
+
+#Idea resources
+.idea
+*.iml
+*.iws
+*.ipr
+
+#OS resources
+.DS_Store
